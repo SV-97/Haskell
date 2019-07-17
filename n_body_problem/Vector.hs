@@ -1,6 +1,7 @@
 module Vector where
 
-import           Data.Foldable (Foldable)
+import           Control.Applicative (Applicative)
+import           Data.Foldable       (Foldable)
 
 newtype Vec2D a =
   Vec2D (a, a)
@@ -35,6 +36,10 @@ instance Functor Vec2D where
     where
       mapTup f (a, b) = (f a, f b)
 
+instance Applicative Vec2D where
+  pure a = Vec2D (a, a)
+  Vec2D (f, g) <*> Vec2D (a, b) = Vec2D (f a, g b)
+
 instance Foldable Vec2D where
   foldr f init (Vec2D (a, b)) = f b $ f a init
   foldr1 f (Vec2D (a, b)) = f b a
@@ -45,7 +50,7 @@ instance Num a => Num (Vec2D a) where
   (*) = undefined
   abs v = abs `fmap` v
   signum = undefined
-  fromInteger v = undefined -- breaks here - why?
+  fromInteger = pure . fromInteger
 
 instance Fractional a => Fractional (Vec2D a) where
   fromRational = undefined

@@ -66,7 +66,7 @@ acceleration bigG bs t = map acceleration' (circPerms bs) -- calculate accelerat
     acceleration' (b:bs) = b'
       where
         b' = b {bodAcc = a : bodAcc b}
-        a = foldr1 (+) aPart
+        a = sum aPart
         ri = head $ bodPos b
         rijs = [rj - ri | rj <- map (head . bodPos) bs]
         aPart =
@@ -82,22 +82,22 @@ timestep solver bigG δt bs t = bs''
     bs'' = solver δt t bs'
 
 main
-  -- config
- = do
-  let bigG = 1.0 :: Double
-  let m' = [1.989e30, 5.972e24, 3.30e23, 6.4219e23, 4.869e24] :: [Mass]
-  let rs =
-        map Vec2D [(0, 0), (1, 0), (0.38, 0), (1.52, 0), (0.72, 0)] :: [Position]
-  let t = 100
-  let δt = 0.05
   -- actual main
-  let ms = normalize m'
-  let bigM = sum ms
-  let vs = map (velocity bigG bigM) rs
-  let bodies = zipWith3 body vs rs ms
+ = do
   let ts = take (round $ t / δt) $ iterate (+ δt) 0
   let systemEuler = timestep eulerMethod bigG δt
   let solution = foldr (flip systemEuler) bodies ts
   -- process solution
   let steps = map ((++ "\n") . show . reverse . bodPos) solution
-  writeFile "n_bod_prob_solution.txt" (foldr1 (++) steps)
+  writeFile "n_bod_prob_solution.txt" (concat steps)
+  where
+    ms = normalize m'
+    bigM = sum ms
+    vs = map (velocity bigG bigM) rs
+    bodies = zipWith3 body vs rs ms
+    -- config
+    δt = 0.05
+    t = 100
+    bigG = 1.0
+    m' = [1.989e30, 5.972e24, 3.30e23, 6.4219e23, 4.869e24]
+    rs = map Vec2D [(0, 0), (1, 0), (0.38, 0), (1.52, 0), (0.72, 0)]
