@@ -28,7 +28,7 @@ normalize a = map (/ sum a) a
 -- Get all circular permutations of a list
 circPerms :: [a] -> [[a]]
 circPerms [] = []
-circPerms xs = map (swapAppend . (flip splitAt xs)) [0 .. length xs - 1]
+circPerms xs = map (swapAppend . flip splitAt xs) [0 .. length xs - 1]
   where
     swapAppend = uncurry . flip $ (++)
 
@@ -37,12 +37,8 @@ velocity :: Double -> Double -> Position -> Velocity
 velocity bigG bigM rs = Vec2D (y, x)
   where
     Vec2D (x, y) = fmap f rs
-    f =
-      (\v ->
-         if not $ isInfinite v
-           then v
-           else 0) .
-      (sqrt . (bigG * bigM /))
+    f 0 = 0
+    f x = sqrt . (bigG * bigM /) $ x
 
 -- δt -> t -> [Bodies(t-1)] -> [Bodies(t)]
 type Solver = Double -> Double -> [Body] -> [Body]
