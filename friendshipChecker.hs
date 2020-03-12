@@ -1,5 +1,12 @@
 {-# OPTIONS_GHC -Wall #-}
 
+{-
+You're given a list of named children and who they're friends with.
+Given two of those kids you want to know if they already are friends,
+if there exists a "friendship chain" of children connecting them (we then say that they can be friends)
+and if it does what that chain looks like or if there's no such chain (we say they can't be friends).
+-}
+
 import           Data.Semigroup
 import           Debug.Trace
 
